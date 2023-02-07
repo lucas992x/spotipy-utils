@@ -1,0 +1,15 @@
+[
+    {
+        "source playlists ids": "72xRqXVtcjOdrvYX1tLCxg 0cbgub5C16D2eKykDFFZLX 3ryIzszte9IS5TOO1ixkzi",
+        "dest playlist id": "1tZTCWZvXIxJ4lEj3qeIYQ",
+        "sorting": "title",
+        "description": "Merge 'Metal & co', 'Roba a caso', 'De André' in 'Mix'"
+    },
+    {
+        "source playlists ids": "72xRqXVtcjOdrvYX1tLCxg 0cbgub5C16D2eKykDFFZLX 3ryIzszte9IS5TOO1ixkzi",
+        "dest playlist id": "0GPow6BNI5JfkOxC8aAJN9",
+        "exclude artists ids": "1xUhNgw4eJDZfvumIpcz1B 2pnezMcaiTHfGmgmGQjLsB 17Mb968quDHpjCkIyq30QV 7kozeGeawfP7IEEL6dddrM 3UBPeHpoGIGmOyzCMRsN2c 24Oiw7BlvO1BETecDLJt6m 6HZr7Fs2VfV1PYHIwo8Ylc 3MKwCexzAd8YTdsSjRkKbv 5274obTQJjzjyycRyJlfml ",
+        "sorting": "title",
+        "description": "Merge in 'Gran Mix' but excluding Death Metal, Deathcore and so on"
+    }
+]
