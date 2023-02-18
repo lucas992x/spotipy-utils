@@ -16,7 +16,7 @@ Then take note of your Spotify username: it is the one seen in profile URL (`htt
 # Scripts
 `tools.py` contains various utility functions and is not meant to be executed standalone, other scripts are listed below in alphabetical order. Here are common arguments:
 - `--user`: Spotify username (explained above), needed unless otherwise specified.
-- `--auth`: authentication mode, by default is "auto", but can be set to "manual" when opening browser has issues or is not possible at all (e.g. CLI-only environments).
+- `--auth`: authentication mode, by default is "auto", but can be set to "manual" when opening browser has issues or is not possible at all (e.g. in CLI-only environments).
 
 All `.txt` files used as input by scripts should be placed in script's directory and contain in each row a playlist id and, optionally, additional text (e.g. playlist name) separated by space; the same format is used by `list-user-playlists.py`'s output, so it's easier to run it and pick needed playlists rather than getting ids one by one from Spotify. Examples are included in this repository.
 
@@ -34,7 +34,7 @@ This script gets various stats from playlist(s). Arguments:
 `--user` argument is only needed when using `--playlists all`.
 
 ## `list-playlists-artists.py`
-This script lists all artists from given playlists, showing id and name of each one. Arguments:
+This script lists all artists from given playlists, showing id and name of each one, sorted by name (can be useful for `merge-playlists.py`). Arguments:
 - `--playlists` (_optional_): can be "all" to work on all playlists from given user or contain a list of playlists ids separated by comma. If omitted playlists are retrieved from `list-playlists-artists.txt`.
 - `--listfile` (_optional_): path of text file where list should be written, if not provided list will only be printed to console.
 
@@ -48,12 +48,12 @@ This script merges playlists. Input file is in JSON format instead of .txt to be
 - `dest playlist id`: id of playlist containing all tracks from source playlists.
 - `exclude artists ids` (_optional_): can be used to exclude artists from source playlists.
 - `sorting` (_optional_): can be used to sort final playlist, accepted values are `title` and `artist`.
-- `description`: this fields is ignored by the script, can be used to write a description of each merge.
+- `description`: this field is ignored by the script, can be used to write a description of each merge.
 
 Arguments:
 - `--file` (_optional_): can be used to specify an input file, if not provided the script uses `merge-playlists.json`.
 
-`--user` argument is not needed.
+`--user` argument is not needed by this script.
 
 ## `sort-playlists.py`
 This script sorts tracks in given playlist(s). If a file named `sort-playlists-by-title.txt` exists playlists inside it are sorted by title; similarly if `sort-playlists-by-artist.txt` exists a sorting by artist is operated. `--user` argument is omitted to make the script work only on selected playlists and avoid modifications on all playlists by accident; to sort all playlists use `python list-user-playlists.py --listfile sort-playlists-by-title.txt` or `python list-user-playlists.py --listfile sort-playlists-by-artist.txt` before launching the script.
