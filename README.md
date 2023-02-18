@@ -16,26 +16,26 @@ Then take note of your Spotify username: it is the one seen in profile URL (`htt
 # Scripts
 `tools.py` contains various utility functions and is not meant to be executed standalone, other scripts are listed below in alphabetical order. Here are common arguments:
 - `--user`: Spotify username (explained above), needed unless otherwise specified.
-- `--auth`: authentication mode, by default is "auto", but can be set to "manual" when opening browser has issues or is not possible at all (e.g. in CLI-only environments).
+- `--auth`: authentication mode, by default is `auto` but can be set to `manual` when opening browser has issues or is not possible at all (e.g. in CLI-only environments).
 
 All `.txt` files used as input by scripts should be placed in script's directory and contain in each row a playlist id and, optionally, additional text (e.g. playlist name) separated by space; the same format is used by `list-user-playlists.py`'s output, so it's easier to run it and pick needed playlists rather than getting ids one by one from Spotify. Examples are included in this repository.
 
 ## `export-playlists.py`
 This script exports all playlists of given user. Arguments:
 - `--dir` (_optional_): path of directory where files will be exported. Inside it two directories will be created: `playlists` where they will be exported in CSV files and `dumps` where they will be dumped into JSON files.
-- `--clear` (_optional_): if "yes" clears output directory before exporting files.
+- `--clear` (_optional_): if `yes` clears output directory before exporting files.
 - `--sep` (_optional_): separator in CSV files (by default is `^`).
 
 ## `get-playlists-stats.py`
 This script gets various stats from playlist(s). Arguments:
-- `--playlists` (_optional_): can be "all" to work on all playlists from given user or contain a list of playlists ids separated by comma. If omitted playlists are retrieved from `get-playlists-stats.txt`.
+- `--playlists` (_optional_): can be `all` to work on all playlists from given user or contain a list of playlists ids separated by comma. If omitted playlists are retrieved from `get-playlists-stats.txt`.
 - `--maxstats` (_optional_): maximum number of items in each stat (by default is 10).
 
 `--user` argument is only needed when using `--playlists all`.
 
 ## `list-playlists-artists.py`
 This script lists all artists from given playlists, showing id and name of each one, sorted by name (can be useful for `merge-playlists.py`). Arguments:
-- `--playlists` (_optional_): can be "all" to work on all playlists from given user or contain a list of playlists ids separated by comma. If omitted playlists are retrieved from `list-playlists-artists.txt`.
+- `--playlists` (_optional_): can be `all` to work on all playlists from given user or contain a list of playlists ids separated by comma. If omitted playlists are retrieved from `list-playlists-artists.txt`.
 - `--listfile` (_optional_): path of text file where list should be written, if not provided list will only be printed to console.
 
 ## `list-user-playlists.py`
