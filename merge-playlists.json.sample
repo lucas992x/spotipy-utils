@@ -3,13 +3,13 @@
         "source playlists ids": "72xRqXVtcjOdrvYX1tLCxg 0cbgub5C16D2eKykDFFZLX 3ryIzszte9IS5TOO1ixkzi",
         "dest playlist id": "1tZTCWZvXIxJ4lEj3qeIYQ",
         "sorting": "title",
-        "description": "Merge 'Metal & co', 'Roba a caso', 'De André' in 'Mix'"
+        "description": "Merge 'Metal & co', 'Roba a caso', 'De André' in 'Gran Mix'"
     },
     {
         "source playlists ids": "72xRqXVtcjOdrvYX1tLCxg 0cbgub5C16D2eKykDFFZLX 3ryIzszte9IS5TOO1ixkzi",
         "dest playlist id": "0GPow6BNI5JfkOxC8aAJN9",
-        "exclude artists ids": "7rZJ1D1ERxrHNKTWwpZFVU 3Ri4H12KFyu98LMjSoij5V 1MK0sGeyTNkbefYGj673e9 1xUhNgw4eJDZfvumIpcz1B 2pnezMcaiTHfGmgmGQjLsB 17Mb968quDHpjCkIyq30QV 7kozeGeawfP7IEEL6dddrM 3UBPeHpoGIGmOyzCMRsN2c 14SgKNlOCKAI0PfRD1HnWh 6MwPCCR936cYfM1dLsGVnl 159qqlGwzE04xyqpfAwRLo 24Oiw7BlvO1BETecDLJt6m 05fG473iIaoy82BF1aGhL8 6HZr7Fs2VfV1PYHIwo8Ylc 3MKwCexzAd8YTdsSjRkKbv 17pZeX1Vy9hugVufmKFbCQ 5274obTQJjzjyycRyJlfml",
+        "exclude artists ids": "7rZJ1D1ERxrHNKTWwpZFVU 3Ri4H12KFyu98LMjSoij5V 1MK0sGeyTNkbefYGj673e9 1xUhNgw4eJDZfvumIpcz1B 2pnezMcaiTHfGmgmGQjLsB 17Mb968quDHpjCkIyq30QV 7kozeGeawfP7IEEL6dddrM 3UBPeHpoGIGmOyzCMRsN2c 14SgKNlOCKAI0PfRD1HnWh 6MwPCCR936cYfM1dLsGVnl 5aD8Bnv5H9YVKH75Xe7QGr 159qqlGwzE04xyqpfAwRLo 24Oiw7BlvO1BETecDLJt6m 05fG473iIaoy82BF1aGhL8 6HZr7Fs2VfV1PYHIwo8Ylc 3MKwCexzAd8YTdsSjRkKbv 17pZeX1Vy9hugVufmKFbCQ 5274obTQJjzjyycRyJlfml",
         "sorting": "title",
-        "description": "Merge in 'Gran Mix' but excluding Death Metal, Deathcore and so on"
+        "description": "Merge in 'Mix' excluding Death Metal, Deathcore and so on"
     }
 ]
