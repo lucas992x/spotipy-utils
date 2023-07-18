@@ -1,6 +1,13 @@
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
+# fix file name replacing characters that cannot be used
+def fix_file_name(name):
+    chars = '\/:*?"<>|'
+    for char in chars:
+        name = name.replace(char, '_')
+    return name
+
 # Authentication; 'manual' can be used when opening browser has issues or is not
 # possible at all (e.g. CLI-only environments), 'modify' should be set to True if
 # playlists need to be modified instead of just read.

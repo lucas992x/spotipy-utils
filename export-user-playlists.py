@@ -1,5 +1,5 @@
 import argparse, os.path, os, shutil, json
-from tools import spotipy_auth, get_user_playlists, get_playlist_tracks
+from tools import fix_file_name, spotipy_auth, get_user_playlists, get_playlist_tracks
 
 # name is self-explanatory
 def convert_ms_to_interval(ms, hours = True):
@@ -44,8 +44,9 @@ def main():
     csv_fields = ['Title', 'Artist', 'Album', 'Duration', 'Id']
     for playlist in user_playlists:
         # set file paths
-        export_file = f'{os.path.join(exported_playlists_dir, playlist["name"])}.csv'
-        dump_file = f'{os.path.join(dumped_playlists_dir, playlist["name"])}.json'
+        file_name = fix_file_name(playlist["name"])
+        export_file = f'{os.path.join(exported_playlists_dir, file_name)}.csv'
+        dump_file = f'{os.path.join(dumped_playlists_dir, file_name)}.json'
         # retrieve songs
         items = get_playlist_tracks(sp, playlist['uri'])
         export_text = args.sep.join(csv_fields) + '\n'
