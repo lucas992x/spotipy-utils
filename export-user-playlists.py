@@ -32,9 +32,9 @@ def main():
         for item in os.listdir(args.dir):
             item_path = os.path.join(args.dir, item)
             if os.path.isfile(item_path):
-                os.unlink(item)
-            else:
-                shutil.rmtree(item)
+                os.unlink(item_path)
+            elif os.path.isdir:
+                shutil.rmtree(item_path)
     exported_playlists_dir = os.path.join(args.dir, "playlists")
     if not os.path.isdir(exported_playlists_dir):
         os.mkdir(exported_playlists_dir)
@@ -71,11 +71,11 @@ def main():
         open(export_file, 'w').close()
         with open(export_file, 'w') as file:
             file.write(export_text)
-        print(f'Playlist "{playlist["name"]}" exported to "{export_file}"')
+        print(f'Playlist "{playlist["name"]}" exported to {export_file}')
         open(dump_file, 'w').close()
         with open(dump_file, 'w') as file:
             json.dump(dump, file, indent = 4)
-        print(f'Playlist "{playlist["name"]}" dumped to "{dump_file}"')
+        print(f'Playlist "{playlist["name"]}" dumped to {dump_file}')
 
 if __name__ == '__main__':
     main()
