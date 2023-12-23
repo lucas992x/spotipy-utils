@@ -1,8 +1,9 @@
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-# fix file name replacing characters that cannot be used
+# fix file name by trimming it and replacing characters that cannot be used
 def fix_file_name(name):
+    name = name.strip()
     chars = '\/:*?"<>|'
     for char in chars:
         name = name.replace(char, '_')
