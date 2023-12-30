@@ -5,6 +5,16 @@ from tools import spotipy_auth, get_user_playlists, get_playlist_tracks, sort_pl
 def lists_share_items(list1, list2):
     return len((set(list1) & set(list2))) > 0
 
+# utility function to split a list in chunks of given size (needed because API
+# allows to add 100 tracks per request)
+def split_list_in_chunks(lst, limit = 100):
+    result = []
+    while len(lst)> limit:
+        result.append(lst[:limit])
+        lst = lst[limit:]
+    result.append(lst)
+    return result
+
 def main():
     # parse arguments
     parser = argparse.ArgumentParser()
@@ -56,7 +66,10 @@ def main():
                 source_tracks_uris_add.append(item['track']['uri'])
         if len(source_tracks_uris_add) > 0:
             print(f'Adding {len(source_tracks_uris_add)} missing track(s) to "{dest_playlist_name}"')
-            sp.playlist_add_items(dest_playlist_id, source_tracks_uris_add)
+            tracks_limit = 100
+            for source_tracks_uris_add_chunk in split_list_in_chunks(source_tracks_uris_add, 100):
+                sp.playlist_add_items(dest_playlist_id, source_tracks_uris_add_chunk)
+            #sp.playlist_add_items(dest_playlist_id, source_tracks_uris_add)
         else:
             print(f'No tracks to add to "{dest_playlist_name}"')
         # sort dest playlist if requested
