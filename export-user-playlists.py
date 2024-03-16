@@ -37,12 +37,12 @@ def main():
                 os.unlink(item_path)
             elif os.path.isdir:
                 shutil.rmtree(item_path)
-    exported_playlists_dir = os.path.join(args.dir, "playlists")
-    if not os.path.isdir(exported_playlists_dir):
-        os.mkdir(exported_playlists_dir)
     dumped_playlists_dir = os.path.join(args.dir, "dumps")
     if not os.path.isdir(dumped_playlists_dir):
         os.mkdir(dumped_playlists_dir)
+    exported_playlists_dir = os.path.join(args.dir, "playlists")
+    if not os.path.isdir(exported_playlists_dir):
+        os.mkdir(exported_playlists_dir)
     csv_fields = ["Title", "Artist", "Album", "Duration", "Id"]
     for playlist in user_playlists:
         # print playlist name
@@ -50,14 +50,18 @@ def main():
         print(f'Exporting playlist "{playlist_name}"')
         # set file paths
         file_name = fix_file_name(playlist_name)
-        export_file = f"{os.path.join(exported_playlists_dir, file_name)}.csv"
         dump_file = f"{os.path.join(dumped_playlists_dir, file_name)}.json"
+        export_file = f"{os.path.join(exported_playlists_dir, file_name)}.csv"
         # retrieve songs
         items = get_playlist_tracks(sp, playlist["uri"])
+        # write dump to JSON file
+        open(dump_file, "w").close()
+        with open(dump_file, "w") as file:
+            json.dump(items, file, indent=4)
+        print(f'Playlist "{playlist["name"]}" dumped to {dump_file}')
+        # create CSV with tracks
         export_text = args.sep.join(csv_fields) + "\n"
-        dump = []
         for item in items:
-            dump.append(item)
             track = item["track"]
             # for unknown reason I found a non-track item in a dump, this check avoids issues
             if track is None:
@@ -82,11 +86,7 @@ def main():
                 song_fields.append(convert_ms_to_interval(track["duration_ms"]))
                 song_fields.append(track["id"])
                 export_text += args.sep.join(song_fields) + "\n"
-        # write to text file(s)
-        open(dump_file, "w").close()
-        with open(dump_file, "w") as file:
-            json.dump(dump, file, indent=4)
-        print(f'Playlist "{playlist["name"]}" dumped to {dump_file}')
+        # write playlist to CSV file
         open(export_file, "w").close()
         with open(export_file, "w") as file:
             file.write(export_text)
