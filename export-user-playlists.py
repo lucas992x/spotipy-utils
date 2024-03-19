@@ -2,6 +2,16 @@ import argparse, os.path, os, shutil, json
 from tools import fix_file_name, spotipy_auth, get_user_playlists, get_playlist_tracks
 
 
+# delete content of given directory
+def clear_dir(dir):
+    for item in os.listdir(dir):
+        item_path = os.path.join(dir, item)
+        if os.path.isfile(item_path):
+            os.unlink(item_path)
+        elif os.path.isdir:
+            shutil.rmtree(item_path)
+
+
 # name is self-explanatory
 def convert_ms_to_interval(ms, hours=True):
     ms = int(ms)
@@ -27,23 +37,25 @@ def main():
     # authenticate
     sp = spotipy_auth(manual=(args.auth.lower() == "manual"), modify=False)
     user_playlists = get_user_playlists(sp, args.user)
-    # setup
+    # set variables
+    dumped_playlists_dir = os.path.join(args.dir, "dumps")
+    exported_playlists_dir = os.path.join(args.dir, "playlists")
+    csv_fields = ["Title", "Artist", "Album", "Duration", "Id"]
+    # create/delete directories if needed
     if not os.path.isdir(args.dir):
         os.mkdir(args.dir)
-    elif args.clear.lower() == "yes":
-        for item in os.listdir(args.dir):
-            item_path = os.path.join(args.dir, item)
-            if os.path.isfile(item_path):
-                os.unlink(item_path)
-            elif os.path.isdir:
-                shutil.rmtree(item_path)
-    dumped_playlists_dir = os.path.join(args.dir, "dumps")
-    if not os.path.isdir(dumped_playlists_dir):
         os.mkdir(dumped_playlists_dir)
-    exported_playlists_dir = os.path.join(args.dir, "playlists")
-    if not os.path.isdir(exported_playlists_dir):
         os.mkdir(exported_playlists_dir)
-    csv_fields = ["Title", "Artist", "Album", "Duration", "Id"]
+    else:
+        if not os.path.isdir(dumped_playlists_dir):
+            os.mkdir(dumped_playlists_dir)
+        elif args.clear.lower() == "yes":
+            clear_dir(dumped_playlists_dir)
+        if not os.path.isdir(dumped_playlists_dir):
+            os.mkdir(exported_playlists_dir)
+        elif args.clear.lower() == "yes":
+            clear_dir(exported_playlists_dir)
+    # export playlists
     for playlist in user_playlists:
         # print playlist name
         playlist_name = playlist["name"]
