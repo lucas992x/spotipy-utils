@@ -2,10 +2,10 @@ import argparse, os.path, os, shutil, json
 from tools import fix_file_name, spotipy_auth, get_user_playlists, get_playlist_tracks
 
 
-# delete content of given directory
-def clear_dir(dir):
-    for item in os.listdir(dir):
-        item_path = os.path.join(dir, item)
+# delete content of given directory without deleting directory itself
+def clear_dir(dir_path):
+    for item in os.listdir(dir_path):
+        item_path = os.path.join(dir_path, item)
         if os.path.isfile(item_path):
             os.unlink(item_path)
         elif os.path.isdir:
@@ -57,52 +57,53 @@ def main():
             clear_dir(exported_playlists_dir)
     # export playlists
     for playlist in user_playlists:
-        # print playlist name
-        playlist_name = playlist["name"]
-        print(f'Exporting playlist "{playlist_name}"')
-        # set file paths
-        file_name = fix_file_name(playlist_name)
-        dump_file = f"{os.path.join(dumped_playlists_dir, file_name)}.json"
-        export_file = f"{os.path.join(exported_playlists_dir, file_name)}.csv"
-        # retrieve songs
-        items = get_playlist_tracks(sp, playlist["uri"])
-        # write dump to JSON file
-        open(dump_file, "w").close()
-        with open(dump_file, "w") as file:
-            json.dump(items, file, indent=4)
-        print(f'Playlist "{playlist["name"]}" dumped to {dump_file}')
-        # create CSV with tracks
-        export_text = args.sep.join(csv_fields) + "\n"
-        for item in items:
-            track = item["track"]
-            # for unknown reason I found a non-track item in a dump, this check avoids issues
-            if track is None:
-                print("Found non-track item")
-            else:
-                song_fields = []
-                # these checks are performed because podcasts don't have all fields
-                if track.get("name", None):
-                    song_fields.append(track["name"])
+        try:
+            # print playlist name
+            playlist_name = playlist["name"]
+            print(f'Exporting playlist "{playlist_name}"')
+            # set file paths
+            file_name = fix_file_name(playlist_name)
+            dump_file = f"{os.path.join(dumped_playlists_dir, file_name)}.json"
+            export_file = f"{os.path.join(exported_playlists_dir, file_name)}.csv"
+            # retrieve songs
+            items = get_playlist_tracks(sp, playlist["uri"])
+            # write dump to JSON file
+            open(dump_file, "w").close()
+            with open(dump_file, "w") as file:
+                json.dump(items, file, indent=4)
+            print(f'Playlist "{playlist["name"]}" dumped to {dump_file}')
+            # create CSV with tracks
+            export_text = args.sep.join(csv_fields) + "\n"
+            for item in items:
+                track = item["track"]
+                # for unknown reason I found a non-track item in a dump, this check avoids issues
+                if track is None:
+                    print("Found non-track item")
                 else:
-                    song_fields.append("")
-                if track.get("artists", None):
-                    song_fields.append(
-                        ", ".join([artist["name"] for artist in track["artists"]])
-                    )
-                else:
-                    song_fields.append("")
-                if track.get("album", None):
-                    song_fields.append(track["album"]["name"])
-                else:
-                    song_fields.append("")
-                song_fields.append(convert_ms_to_interval(track["duration_ms"]))
-                song_fields.append(track["id"])
-                export_text += args.sep.join(song_fields) + "\n"
-        # write playlist to CSV file
-        open(export_file, "w").close()
-        with open(export_file, "w") as file:
-            file.write(export_text)
-        print(f'Playlist "{playlist["name"]}" exported to {export_file}')
+                    song_fields = []
+                    # these checks are performed because podcasts don't have all fields
+                    if track.get("name", None):
+                        song_fields.append(track["name"])
+                    else:
+                        song_fields.append("")
+                    if track.get("artists", None):
+                        song_fields.append(", ".join([artist["name"] for artist in track["artists"]]))  # fmt: skip
+                    else:
+                        song_fields.append("")
+                    if track.get("album", None):
+                        song_fields.append(track["album"]["name"])
+                    else:
+                        song_fields.append("")
+                    song_fields.append(convert_ms_to_interval(track["duration_ms"]))
+                    song_fields.append(track["id"])
+                    export_text += args.sep.join(song_fields) + "\n"
+            # write playlist to CSV file
+            open(export_file, "w").close()
+            with open(export_file, "w") as file:
+                file.write(export_text)
+            print(f'Playlist "{playlist["name"]}" exported to {export_file}')
+        except Exception as e:
+            print(f"Error occurred with playlist: {e}")
 
 
 if __name__ == "__main__":
