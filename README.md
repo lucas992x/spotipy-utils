@@ -55,5 +55,9 @@ Arguments:
 
 `--user` argument is not needed by this script.
 
+## `shuffle-playlists.py`
+This script sorts playlist(s) randomly. Arguments:
+- `--playlists`: ids of playlists, separated by comma.
+
 ## `sort-playlists.py`
 This script sorts tracks in given playlist(s). If a file named `sort-playlists-by-title.txt` exists playlists inside it are sorted by title; similarly if `sort-playlists-by-artist.txt` exists a sorting by artist is operated. `--user` argument is omitted to make the script work only on selected playlists and avoid modifications on all playlists by accident; to sort all playlists use `python list-user-playlists.py --listfile sort-playlists-by-title.txt` or `python list-user-playlists.py --listfile sort-playlists-by-artist.txt` before launching the script.

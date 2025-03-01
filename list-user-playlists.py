@@ -2,6 +2,7 @@ import argparse
 from tools import spotipy_auth, get_user_playlists
 
 
+# main function
 def main():
     # parse arguments
     parser = argparse.ArgumentParser()
@@ -29,5 +30,6 @@ def main():
         print(f"Playlists of user {args.user} are:\n{lst}")
 
 
+# invoke main function
 if __name__ == "__main__":
     main()

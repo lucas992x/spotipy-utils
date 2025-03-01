@@ -25,6 +25,7 @@ def convert_ms_to_interval(ms, hours=True):
     return output
 
 
+# main function
 def main():
     # parse arguments
     parser = argparse.ArgumentParser()
@@ -106,5 +107,6 @@ def main():
             print(f"Error occurred with playlist: {e}")
 
 
+# invoke main function
 if __name__ == "__main__":
     main()
