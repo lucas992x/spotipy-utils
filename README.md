@@ -29,6 +29,7 @@ This script exports all playlists of given user. Arguments:
 ## `get-playlists-stats.py`
 This script gets various stats from playlist(s). Arguments:
 - `--playlists` (_optional_): can be `all` to work on all playlists from given user or contain a list of playlists ids separated by comma. If omitted playlists are retrieved from `get-playlists-stats.txt`.
+- `--file` (_optional_): can be used to specify path of a JSON file where a playlist was dumped, so that playlist data is retrieved from it without having to retrieve playlist again from Spotify.
 - `--maxstats` (_optional_): maximum number of items in each stat (by default is 10).
 
 `--user` argument is only needed when using `--playlists all`.
