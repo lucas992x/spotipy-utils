@@ -1,5 +1,6 @@
 import spotipy, random, string
 from spotipy.oauth2 import SpotifyOAuth
+from time import sleep
 
 
 # fix file name by trimming it and replacing characters that cannot be used
@@ -96,8 +97,30 @@ def sort_playlist_tracks(sp, playlist_id, by):
     sorted_tracks.sort()
     if tracks != sorted_tracks:
         for track in sorted_tracks:
-            old_index = tracks.index(track)
-            new_index = sorted_tracks.index(track)
-            if new_index != old_index:
-                sp.playlist_reorder_items(playlist_id, old_index, new_index)
-                tracks.insert(new_index, tracks.pop(old_index))
+            # try multiple times because for big playlists may exceed time out;
+            # if an error occurs wait some time before retrying and increase
+            # wait time for next error (it is reset when activities are
+            # performed successfully and next track is processed)
+            retry_counter = 0
+            max_retries = 5
+            wait_time = 5
+            done = False
+            while not done:
+                # try to put current track in right place
+                try:
+                    old_index = tracks.index(track)
+                    new_index = sorted_tracks.index(track)
+                    if new_index != old_index:
+                        sp.playlist_reorder_items(playlist_id, old_index, new_index)
+                        tracks.insert(new_index, tracks.pop(old_index))
+                    done = True
+                # print exception details and check if max retries were reached
+                except Exception as e:
+                    print(e)
+                    retry_counter += 1
+                    if retry_counter == max_retries:
+                        break
+                    else:
+                        print(f"Waiting {wait_time} before retrying")
+                        sleep(wait_time)
+                        wait_time *= 2
