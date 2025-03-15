@@ -1,4 +1,4 @@
-import argparse, os.path
+import argparse, sys, os.path, json
 import pandas as pd
 from tools import (
     spotipy_auth,
@@ -9,6 +9,33 @@ from tools import (
 )
 
 
+# function that updates playlists data with data from a specific playlist
+def get_playlist_stats(playlist_tracks, tracks_data, single_artists, artists_durations, tracks_counter):  # fmt: skip
+    for item in playlist_tracks:
+        track = item["track"]
+        if not track["episode"]:
+            duration_ms = int(track["duration_ms"])
+            datarow = {
+                "Title": track["name"],
+                "Duration-ms": duration_ms,
+                "Duration": convert_ms_to_interval(duration_ms),
+                "Id": track["id"],
+            }
+            if track.get("artists", None) is not None:
+                splittedartists = [artist["name"] for artist in track["artists"]]
+                single_artists += splittedartists
+                datarow.update({"Artist": ", ".join(splittedartists)})
+                for artist in splittedartists:
+                    artist_duration = artists_durations.get(artist, 0) + duration_ms
+                    artists_durations.update({artist: artist_duration})
+            if track.get("album", None) is not None:
+                datarow.update({"Album": track["album"]["name"]})
+            tracks_data.loc[tracks_counter] = datarow
+            tracks_counter += 1
+    tracks_data = tracks_data.drop_duplicates()
+    return tracks_data, single_artists, artists_durations, tracks_counter
+
+
 # main function
 def main():
     # parse arguments
@@ -16,54 +43,63 @@ def main():
     parser.add_argument("--user", default="luca.s992")
     parser.add_argument("--auth", default="auto")
     parser.add_argument("--playlists", default="")
+    parser.add_argument("--file", default="")
     parser.add_argument("--maxstats", default="10")
     args = parser.parse_args()
-    # authenticate
-    sp = spotipy_auth(manual=(args.auth.lower() == "manual"), modify=False)
-    # read data from playlist(s)
-    if args.playlists:
-        if args.playlists.lower() == "all":
-            stats_playlists = get_user_playlists(sp, args.user)
-        else:
-            stats_playlists = [sp.playlist(id) for id in args.playlists.split(",")]
-    else:
-        script_dir = os.path.dirname(__file__)
-        stats_file = os.path.join(script_dir, "get-playlists-stats.txt")
-        ids = read_ids_from_file(stats_file)
-        stats_playlists = []
-        for id in ids:
-            stats_playlists.append(sp.playlist(id))
-    single_artists = []
-    artists_durations = {}
-    stats_playlists_names = ", ".join([f'"{playlist["name"]}"' for playlist in stats_playlists])  # fmt: skip
+    # initialize playlist(s) data
     table_fields = ["Title", "Artist", "Album", "Duration", "Id", "Duration-ms"]
     tracks_data = pd.DataFrame(columns=table_fields)
-    index = 0
-    for playlist in stats_playlists:
-        # get item info and update dataframe
-        items = get_playlist_tracks(sp, playlist["uri"])
-        for item in items:
-            track = item["track"]
-            if not track["episode"]:
-                duration_ms = int(track["duration_ms"])
-                datarow = {
-                    "Title": track["name"],
-                    "Duration-ms": duration_ms,
-                    "Duration": convert_ms_to_interval(duration_ms),
-                    "Id": track["id"],
-                }
-                if track.get("artists", None) is not None:
-                    splittedartists = [artist["name"] for artist in track["artists"]]
-                    single_artists += splittedartists
-                    datarow.update({"Artist": ", ".join(splittedartists)})
-                    for artist in splittedartists:
-                        artist_duration = artists_durations.get(artist, 0) + duration_ms
-                        artists_durations.update({artist: artist_duration})
-                if track.get("album", None) is not None:
-                    datarow.update({"Album": track["album"]["name"]})
-                tracks_data.loc[index] = datarow
-                index += 1
-    tracks_data = tracks_data.drop_duplicates()
+    single_artists = []
+    artists_durations = {}
+    tracks_counter = 0
+    # read data from playlist(s)
+    if args.file:
+        # try to read playlist items from file
+        if not os.path.isfile(args.file):
+            sys.exit(f"Cannot find playlist file {args.file}")
+        with open(args.file, "r") as file:
+            playlist_tracks = json.load(file)
+        stats_playlists_names = f"'{os.path.splitext(os.path.basename(args.file))[0]}'"
+        tracks_data, single_artists, artists_durations, tracks_counter = (
+            get_playlist_stats(
+                playlist_tracks,
+                tracks_data,
+                single_artists,
+                artists_durations,
+                tracks_counter,
+            )
+        )
+    else:
+        # authenticate
+        sp = spotipy_auth(manual=(args.auth.lower() == "manual"), modify=False)
+        # retrieve data from specified playlist(s)
+        if args.playlists:
+            if args.playlists.lower() == "all":
+                stats_playlists = get_user_playlists(sp, args.user)
+            else:
+                stats_playlists = [sp.playlist(id) for id in args.playlists.split(",")]
+        else:
+            script_dir = os.path.dirname(__file__)
+            stats_file = os.path.join(script_dir, "get-playlists-stats.txt")
+            if not os.path.isfile(stats_file):
+                sys.exit(f"Cannot find stats file {stats_file}")
+            ids = read_ids_from_file(stats_file)
+            stats_playlists = []
+            for id in ids:
+                stats_playlists.append(sp.playlist(id))
+        stats_playlists_names = ", ".join([f'"{playlist["name"]}"' for playlist in stats_playlists])  # fmt: skip
+        for playlist in stats_playlists:
+            playlist_tracks = get_playlist_tracks(sp, playlist["uri"])
+            tracks_data, single_artists, artists_durations, tracks_counter = (
+                get_playlist_stats(
+                    playlist_tracks,
+                    tracks_data,
+                    single_artists,
+                    artists_durations,
+                    tracks_counter,
+                )
+            )
+    # count unique artists
     artists_counter = pd.DataFrame({"Artist": single_artists})
     # print stuff
     print(f"Stats for playlists {stats_playlists_names}\n")
