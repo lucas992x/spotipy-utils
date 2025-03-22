@@ -18,7 +18,9 @@ Then take note of your Spotify username: it is the one seen in profile URL (`htt
 - `--user`: Spotify username (explained above), needed unless otherwise specified.
 - `--auth`: authentication mode, by default is `auto` but can be set to `manual` when opening browser has issues or is not possible at all (e.g. in CLI-only environments).
 
-All `.txt` files used as input by scripts should be placed in script's directory and contain in each row a playlist id and, optionally, additional text (e.g. playlist name) separated by space; the same format is used by `list-user-playlists.py`'s output, so it's easier to run it and pick needed playlists rather than getting ids one by one from Spotify. Examples are included in this repository.
+Here are other common usages:
+- All `.txt` files used as input by scripts should be placed in script's directory and contain in each row a playlist id and, optionally, additional text (e.g. playlist name) separated by space; the same format is used by `list-user-playlists.py`'s output, so it's easier to run it and pick needed playlists rather than getting ids one by one from Spotify. Examples are included in this repository.
+- All arguments that contain playlists ids should have them separated by comma. In some cases this argument can be `all` to work automatically on all user's playlists; some scripts don't allow this to prevent modifications on all playlists made by accident, but it's possible to automatically generate a file with all playlists by using `python list-user-playlists.py --listfile <file-name>.txt`.
 
 ## `export-playlists.py`
 This script exports all playlists of given user. Arguments:
@@ -28,7 +30,7 @@ This script exports all playlists of given user. Arguments:
 
 ## `get-playlists-stats.py`
 This script gets various stats from playlist(s). Arguments:
-- `--playlists` (_optional_): can be `all` to work on all playlists from given user or contain a list of playlists ids separated by comma. If omitted playlists are retrieved from `get-playlists-stats.txt`.
+- `--playlists` (_optional_): ids of playlists (can be `all`), if omitted playlists are retrieved from `get-playlists-stats.txt`.
 - `--file` (_optional_): can be used to specify path of a JSON file where a playlist was dumped, so that playlist data is retrieved from it without having to retrieve playlist again from Spotify.
 - `--maxstats` (_optional_): maximum number of items in each stat (by default is 10).
 
@@ -36,7 +38,7 @@ This script gets various stats from playlist(s). Arguments:
 
 ## `list-playlists-artists.py`
 This script lists all artists from given playlists, showing id and name of each one, sorted by name (can be useful for `merge-playlists.py`). Arguments:
-- `--playlists` (_optional_): can be `all` to work on all playlists from given user or contain a list of playlists ids separated by comma. If omitted playlists are retrieved from `list-playlists-artists.txt`.
+- `--playlists` (_optional_): ids of playlists to work on (can be `all`), if omitted playlists are retrieved from `list-playlists-artists.txt` if exists.
 - `--listfile` (_optional_): path of text file where list should be written, if not provided list will only be printed to console.
 
 ## `list-user-playlists.py`
@@ -58,7 +60,13 @@ Arguments:
 
 ## `shuffle-playlists.py`
 This script sorts playlist(s) randomly. Arguments:
-- `--playlists`: ids of playlists, separated by comma.
+- `--playlists`: ids of playlists to shuffle (cannot be `all`).
+
+`--user` argument is not needed by this script.
 
 ## `sort-playlists.py`
-This script sorts tracks in given playlist(s). If a file named `sort-playlists-by-title.txt` exists playlists inside it are sorted by title; similarly if `sort-playlists-by-artist.txt` exists a sorting by artist is operated. `--user` argument is omitted to make the script work only on selected playlists and avoid modifications on all playlists by accident; to sort all playlists use `python list-user-playlists.py --listfile sort-playlists-by-title.txt` or `python list-user-playlists.py --listfile sort-playlists-by-artist.txt` before launching the script.
+This script sorts tracks in given playlist(s). Arguments:
+- `--bytitle` (_optional_): ids of playlists to sort by title (cannot be `all`), if omitted playlists are retrieved from `sort-playlists-by-title.txt` if exists.
+- `--byartist` (_optional_): ids of playlists to sort by artist (cannot be `all`), if omitted playlists are retrieved from `sort-playlists-by-artist.txt` if exists.
+
+`--user` argument is not needed by this script.
