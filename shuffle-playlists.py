@@ -1,5 +1,5 @@
-import argparse
-from tools import spotipy_auth, sort_playlist_tracks
+import argparse, os.path
+from tools import spotipy_auth, read_ids_from_file, sort_playlist_tracks
 
 
 # main function
@@ -8,12 +8,21 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--auth", default="auto")
     parser.add_argument("--playlists", default="")
+    parser.add_argument("--portion", default="")
     args = parser.parse_args()
     # authenticate
     sp = spotipy_auth(manual=(args.auth.lower() == "manual"), modify=True)
-    # shuffle playlist(s) randomly
-    shuffle_playlists_ids = args.playlists.split(",")
-    for id in shuffle_playlists_ids:
+    # get script directory
+    script_dir = os.path.dirname(__file__)
+    # check if an argument was passed to specify playlist(s) to be shuffled
+    if args.playlists:
+        playlists_ids = args.playlists.split(",")
+    else:
+        sort_playlists_file = os.path.join(script_dir, "shuffle-playlists.txt")
+        if os.path.isfile(sort_playlists_file):
+            playlists_ids = read_ids_from_file(sort_playlists_file)
+    # sort playlist(s) randomly
+    for id in playlists_ids:
         print(f'Sorting tracks in "{sp.playlist(id)["name"]}" randomly')
         sort_playlist_tracks(sp, id, "random")
         # print(f'Sorted tracks in "{sp.playlist(id)["name"]}" randomly')

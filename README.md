@@ -60,7 +60,7 @@ Arguments:
 
 ## `shuffle-playlists.py`
 This script sorts playlist(s) randomly. Arguments:
-- `--playlists`: ids of playlists to shuffle (cannot be `all`).
+- `--playlists`: ids of playlists to sorted randomly (cannot be `all`), if omitted playlists are retrieved from `shuffle-playlists.txt` if exists.
 
 `--user` argument is not needed by this script.
 

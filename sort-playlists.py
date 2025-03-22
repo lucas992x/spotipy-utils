@@ -12,7 +12,7 @@ def main():
     args = parser.parse_args()
     # authenticate
     sp = spotipy_auth(manual=(args.auth.lower() == "manual"), modify=True)
-    # sort playlist(s)
+    # get script directory
     script_dir = os.path.dirname(__file__)
     # initialize list of playlists to sort, each item will contain id and sorting criteria
     sort_playlists = []
