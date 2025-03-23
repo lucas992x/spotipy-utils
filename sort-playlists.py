@@ -7,8 +7,8 @@ def main():
     # parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("--auth", default="auto")
-    parser.add_argument("--bytitle", default="auto")
-    parser.add_argument("--byartist", default="auto")
+    parser.add_argument("--bytitle", default="")
+    parser.add_argument("--byartist", default="")
     args = parser.parse_args()
     # authenticate
     sp = spotipy_auth(manual=(args.auth.lower() == "manual"), modify=True)

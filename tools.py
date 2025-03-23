@@ -66,61 +66,82 @@ def convert_ms_to_interval(ms, hours=True):
     return output
 
 
-# sort tracks in playlist
-def sort_playlist_tracks(sp, playlist_id, by):
-    items = get_playlist_tracks(sp, playlist_id)
-    tracks = []
-    for item in items:
-        track = item["track"]
-        # to improve sorting everything is lowercased, spaces are removed, exclamation
-        # mark is used as separator to correctly sort tracks with same or similar fields
-        title = track["name"]
-        artists = ", ".join([a["name"] for a in track["artists"]])
-        album = track["album"]["name"]
-        if by == "title":
-            fields = [title, artists, album]
-        elif by == "artist":
-            fields = [artists, album, title]
-        elif by == "random":
-            fields = [
-                "".join(
-                    random.choices(
-                        string.ascii_uppercase + string.ascii_lowercase + string.digits,
-                        k=100,
+# move track in specified position of given playlist
+def move_track_in_playlist(sp, playlist_id, old_index, new_index):
+    # try multiple times because for big playlists may exceed time out; if an error
+    # occurs wait some time before retrying and increase wait time for next error
+    retry_counter = 0
+    max_retries = 5
+    wait_time = 5
+    done = False
+    while not done:
+        # try to put current track in desired position
+        try:
+            sp.playlist_reorder_items(playlist_id, old_index, new_index)
+            done = True
+        # check if max retries were reached
+        except Exception as e:
+            if retry_counter == max_retries - 1:
+                raise
+            else:
+                retry_counter += 1
+                print(
+                    "Error while moving track from index {} to {}, retry {} of {}; waiting {} before retrying".format(
+                        old_index, new_index, retry_counter, max_retries, wait_time
                     )
                 )
-            ]
-        tracks.append("!".join(fields).lower().replace(" ", ""))
-    # create a copy of tracks list, sort it and compare the two lists: if they
-    # are different move each track in playlist to its new index
-    sorted_tracks = tracks[:]
-    sorted_tracks.sort()
-    if tracks != sorted_tracks:
-        for track in sorted_tracks:
-            # try multiple times because for big playlists may exceed time out;
-            # if an error occurs wait some time before retrying and increase
-            # wait time for next error (it is reset when activities are
-            # performed successfully and next track is processed)
-            retry_counter = 0
-            max_retries = 5
-            wait_time = 5
-            done = False
-            while not done:
-                # try to put current track in right place
-                try:
-                    old_index = tracks.index(track)
-                    new_index = sorted_tracks.index(track)
-                    if new_index != old_index:
-                        sp.playlist_reorder_items(playlist_id, old_index, new_index)
-                        tracks.insert(new_index, tracks.pop(old_index))
-                    done = True
-                # print exception details and check if max retries were reached
-                except Exception as e:
-                    print(e)
-                    retry_counter += 1
-                    if retry_counter == max_retries:
-                        break
-                    else:
-                        print(f"Waiting {wait_time} before retrying")
-                        sleep(wait_time)
-                        wait_time *= 2
+                print(e)
+                sleep(wait_time)
+                wait_time *= 2
+
+
+# sort tracks in playlist
+def sort_playlist_tracks(sp, playlist_id, by, portion=None):
+    # retrieve all playlist tracks
+    items = get_playlist_tracks(sp, playlist_id)
+    # check if only last portion of playlist should be sorted, in that case all
+    # tracks from starting index will be moved in a random position before it (only
+    # used with random sorting)
+    if portion:
+        if portion.endswith("%"):
+            num_perc = float(portion.replace("%", "")) / 100
+            start_index = round(len(items) * (1 - num_perc))
+        else:
+            start_index = len(items) - int(portion)
+        for old_index in range(start_index, len(items)):
+            new_index = random.randint(0, start_index - 1)
+            move_track_in_playlist(sp, playlist_id, old_index, new_index)
+    else:
+        # initialize list of tracks as strings
+        tracks = []
+        for j in range(len(items)):
+            if by == "random":
+                # generate random alphanumeric string to sort tracks randomly
+                choices = (string.ascii_uppercase + string.ascii_lowercase + string.digits)  # fmt: skip
+                fields = ["".join(random.choices(choices, k=100))]
+            else:
+                # retrieve playlist data to sort it
+                item = items[j]
+                track = item["track"]
+                # to improve sorting everything is lowercased, spaces are
+                # removed, exclamation mark is used as separator to correctly
+                # sort tracks with same or similar fields
+                title = track["name"]
+                artists = ", ".join([a["name"] for a in track["artists"]])
+                album = track["album"]["name"]
+                if by == "title":
+                    fields = [title, artists, album]
+                elif by == "artist":
+                    fields = [artists, album, title]
+            tracks.append("!".join(fields).lower().replace(" ", ""))
+        # create a copy of tracks list, sort it and compare the two lists: if they
+        # are different move each track in playlist to its new index
+        sorted_tracks = tracks[:]
+        sorted_tracks.sort()
+        if tracks != sorted_tracks:
+            for track in sorted_tracks:
+                old_index = tracks.index(track)
+                new_index = sorted_tracks.index(track)
+                if new_index != old_index:
+                    move_track_in_playlist(sp, playlist_id, old_index, new_index)
+                    tracks.insert(new_index, tracks.pop(old_index))

@@ -15,7 +15,7 @@ Then take note of your Spotify username: it is the one seen in profile URL (`htt
 
 # Scripts
 `tools.py` contains various utility functions and is not meant to be executed standalone, other scripts are listed below in alphabetical order. Here are common arguments:
-- `--user`: Spotify username (explained above), needed unless otherwise specified.
+- `--user`: Spotify username (explained above), only needed in scripts that don't perform modify operations on playlists (unless otherwise specified).
 - `--auth`: authentication mode, by default is `auto` but can be set to `manual` when opening browser has issues or is not possible at all (e.g. in CLI-only environments).
 
 Here are other common usages:
@@ -56,17 +56,12 @@ This script merges playlists. Input file is in JSON format instead of .txt to be
 Arguments:
 - `--file` (_optional_): can be used to specify an input file, if not provided the script uses `merge-playlists.json`.
 
-`--user` argument is not needed by this script.
-
 ## `shuffle-playlists.py`
 This script sorts playlist(s) randomly. Arguments:
 - `--playlists`: ids of playlists to sorted randomly (cannot be `all`), if omitted playlists are retrieved from `shuffle-playlists.txt` if exists.
-
-`--user` argument is not needed by this script.
+- `--portion` (_optional_): can be used to move only last tracks to random positions, may be a number or a percentage (e.g. `10%`).
 
 ## `sort-playlists.py`
 This script sorts tracks in given playlist(s). Arguments:
 - `--bytitle` (_optional_): ids of playlists to sort by title (cannot be `all`), if omitted playlists are retrieved from `sort-playlists-by-title.txt` if exists.
 - `--byartist` (_optional_): ids of playlists to sort by artist (cannot be `all`), if omitted playlists are retrieved from `sort-playlists-by-artist.txt` if exists.
-
-`--user` argument is not needed by this script.

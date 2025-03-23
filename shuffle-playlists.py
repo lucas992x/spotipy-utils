@@ -23,8 +23,11 @@ def main():
             playlists_ids = read_ids_from_file(sort_playlists_file)
     # sort playlist(s) randomly
     for id in playlists_ids:
-        print(f'Sorting tracks in "{sp.playlist(id)["name"]}" randomly')
-        sort_playlist_tracks(sp, id, "random")
+        print_message = f'Sorting tracks in "{sp.playlist(id)["name"]}" randomly'
+        if args.portion:
+            print_message += f" (last {args.portion})"
+        print(print_message)
+        sort_playlist_tracks(sp, id, "random", args.portion)
         # print(f'Sorted tracks in "{sp.playlist(id)["name"]}" randomly')
 
 
