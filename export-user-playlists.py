@@ -25,6 +25,14 @@ def convert_ms_to_interval(ms, hours=True):
     return output
 
 
+# quote CSV fields that contain separator
+def quote_fields(fields, separator):
+    for j in range(len(fields)):
+        if separator in fields[j]:
+            fields[j] = f'"{fields[j]}"'
+    return fields
+
+
 # main function
 def main():
     # parse arguments
@@ -41,7 +49,7 @@ def main():
     # set variables
     dumped_playlists_dir = os.path.join(args.dir, "dumps")
     exported_playlists_dir = os.path.join(args.dir, "playlists")
-    csv_fields = ["Title", "Artist", "Album", "Duration", "Id"]
+    csv_fields = ["Title", "Artist", "Album", "Duration", "Added", "Id"]
     # create/delete directories if needed
     if not os.path.isdir(args.dir):
         os.mkdir(args.dir)
@@ -96,7 +104,10 @@ def main():
                     else:
                         song_fields.append("")
                     song_fields.append(convert_ms_to_interval(track["duration_ms"]))
+                    song_fields.append(item["added_at"])
                     song_fields.append(track["id"])
+                    # quote fields that contain separator and add line to CSV
+                    song_fields = quote_fields(song_fields, args.sep)
                     export_text += args.sep.join(song_fields) + "\n"
             # write playlist to CSV file
             open(export_file, "w").close()
