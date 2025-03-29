@@ -71,7 +71,7 @@ def main():
             playlist_name = playlist["name"]
             print(f'Exporting playlist "{playlist_name}"')
             # set file paths
-            file_name = fix_file_name(playlist_name)
+            file_name = fix_file_name(f"{playlist_name} [{playlist['uri']}]")
             dump_file = f"{os.path.join(dumped_playlists_dir, file_name)}.json"
             export_file = f"{os.path.join(exported_playlists_dir, file_name)}.csv"
             # retrieve songs
