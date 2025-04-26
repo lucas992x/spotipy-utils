@@ -39,13 +39,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--user", default="luca.s992")
     parser.add_argument("--auth", default="auto")
+    parser.add_argument("--playlists", default="all")
     parser.add_argument("--dir", default="")
     parser.add_argument("--clear", default="no")
     parser.add_argument("--sep", default="^")
     args = parser.parse_args()
     # authenticate
     sp = spotipy_auth(manual=(args.auth.lower() == "manual"), modify=False)
-    user_playlists = get_user_playlists(sp, args.user)
     # set variables
     dumped_playlists_dir = os.path.join(args.dir, "dumps")
     exported_playlists_dir = os.path.join(args.dir, "playlists")
@@ -64,8 +64,13 @@ def main():
             os.mkdir(exported_playlists_dir)
         elif args.clear.lower() == "yes":
             clear_dir(exported_playlists_dir)
+    # check if all user playlists should be exported or only specified ones
+    if args.playlists.lower() == "all":
+        exported_playlists = get_user_playlists(sp, args.user)
+    else:
+        exported_playlists = [sp.playlist(id) for id in args.playlists.split(",")]
     # export playlists
-    for playlist in user_playlists:
+    for playlist in exported_playlists:
         try:
             # print playlist name
             playlist_name = playlist["name"]

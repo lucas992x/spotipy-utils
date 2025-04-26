@@ -23,7 +23,8 @@ Here are other common usages:
 - All arguments that contain playlists ids should have them separated by comma. In some cases this argument can be `all` to work automatically on all user's playlists; some scripts don't allow this to prevent modifications on all playlists made by accident, but it's possible to automatically generate a file with all playlists by using `python list-user-playlists.py --listfile <file-name>.txt`.
 
 ## `export-playlists.py`
-This script exports all playlists of given user. Arguments:
+This script exports playlists to files. Arguments:
+- `--playlists`: ids of playlists (by default is `all`).
 - `--dir` (_optional_): path of directory where files will be exported. Inside it two directories will be created: `playlists` where they will be exported in CSV files and `dumps` where they will be dumped into JSON files.
 - `--clear` (_optional_): if `yes` clears output directory before exporting files.
 - `--sep` (_optional_): separator in CSV files (by default is `^`).
