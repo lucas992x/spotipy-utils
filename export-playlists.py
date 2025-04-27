@@ -81,10 +81,12 @@ def main():
             export_file = f"{os.path.join(exported_playlists_dir, file_name)}.csv"
             # retrieve songs
             items = get_playlist_tracks(sp, playlist["uri"])
+            # add retrieved songs to playlist object
+            playlist["tracks"]["items"] = items
             # write dump to JSON file
             open(dump_file, "w").close()
             with open(dump_file, "w") as file:
-                json.dump(items, file, indent=4)
+                json.dump(playlist, file, indent=4)
             print(f'Playlist "{playlist["name"]}" dumped to {dump_file}')
             # create CSV with tracks
             export_text = args.sep.join(csv_fields) + "\n"

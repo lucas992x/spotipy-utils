@@ -58,7 +58,8 @@ def main():
         if not os.path.isfile(args.file):
             sys.exit(f"Cannot find playlist file {args.file}")
         with open(args.file, "r") as file:
-            playlist_tracks = json.load(file)
+            playlist = json.load(file)
+        playlist_tracks = playlist["tracks"]["items"]
         stats_playlists_names = f"'{os.path.splitext(os.path.basename(args.file))[0]}'"
         tracks_data, single_artists, artists_durations, tracks_counter = (
             get_playlist_stats(
